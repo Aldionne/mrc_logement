@@ -1,33 +1,50 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
+# Chargement des données
 @st.cache_data
 def load_data():
-    return pd.read_csv("data_mrc_logement.csv")
+    df = pd.read_csv("data_mrc_logement.csv", sep=",", engine="python")
+    df.columns = df.columns.str.strip()
+    df = df.applymap(lambda x: str(x).strip(";") if isinstance(x, str) else x)
+    return df
 
 data = load_data()
-data.columns = data.columns.str.strip()
 
-# Debug utile
-st.write("Colonnes disponibles (debug) :", [repr(c) for c in data.columns])
-
+# Titre
 st.title("Évolution du nombre de logements par MRC (2015–2025)")
 
+# Sélection de la MRC
 selected_mrc = st.selectbox("Choisissez une MRC", sorted(data["MRC"].unique()))
+
+# Filtrage des données pour la MRC sélectionnée
 mrc_data = data[data["MRC"] == selected_mrc]
 
+# Vérification qu'on a bien une ligne
 if not mrc_data.empty:
     mrc_row = mrc_data.iloc[0]
+    years = [str(year) for year in range(2015, 2026)]
 
-    # Cette ligne récupère toutes les années automatiquement et évite les KeyError
-    years = [col for col in data.columns if col != "MRC"]
-
+    # Création de la DataFrame pour le graphique
     logement_data = pd.DataFrame({
         "Année": years,
-        "Nombre de logements": [mrc_row[year] for year in years]
+        "Nombre de logements": [int(mrc_row[year]) for year in years]
     })
 
     st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
-    st.bar_chart(logement_data.set_index("Année"))
+
+    # Création du graphique avec Altair
+    chart = alt.Chart(logement_data).mark_line(point=True).encode(
+        x=alt.X("Année:O", title="Année"),
+        y=alt.Y("Nombre de logements:Q", title="Nombre de logements"),
+        tooltip=["Année", "Nombre de logements"]
+    ).interactive().properties(
+        width=700,
+        height=400
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
 else:
     st.error("Aucune donnée trouvée pour la MRC sélectionnée.")
