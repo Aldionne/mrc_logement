@@ -25,6 +25,11 @@ st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
 
 # Création d'une série temporelle à partir des colonnes 2015 à 2025
 years = [str(year) for year in range(2015, 2026)]
+
+# Affichage pour diagnostic (facultatif)
+st.write("Valeurs pour la MRC sélectionnée :", mrc_data)
+
+# Construction des données pour le graphique
 logement_data = pd.DataFrame({
     "Année": years,
     "Nombre de logements": [mrc_data[year] for year in years]
