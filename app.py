@@ -13,7 +13,7 @@ def load_data():
 data = load_data()
 
 # Titre
-st.title("Évolution du nombre de logements par MRC (2015–2025)")
+st.title("Indicateurs de l'état du logement et l'habitation par MRC")
 
 # Sélection de la MRC
 selected_mrc = st.selectbox("Choisissez une MRC", sorted(data["MRC"].unique()))
@@ -32,7 +32,7 @@ if not mrc_data.empty:
         "Nombre de logements": [int(mrc_row[year]) for year in years]
     })
 
-    st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
+    st.subheader(f"Évolution du nombre de logements (2015-2025): {selected_mrc}")
 
     # Création du graphique avec Altair
     chart = alt.Chart(logement_data).mark_line(point=True).encode(
