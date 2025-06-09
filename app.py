@@ -4,35 +4,28 @@ import pandas as pd
 # Chargement des données
 @st.cache_data
 def load_data():
-    return pd.read_csv("data_mrc.csv")
+    return pd.read_csv("data_mrc_logement.csv")
 
 data = load_data()
 
 # Titre
-st.title("Indicateurs sur le logement et l'habitation")
+st.title("Évolution du nombre de logements par MRC (2015–2025)")
 
 # Sélection de la MRC
 selected_mrc = st.selectbox("Choisissez une MRC", sorted(data["MRC"].unique()))
 
-# Filtrage
+# Filtrage des données pour la MRC sélectionnée
 mrc_data = data[data["MRC"] == selected_mrc].iloc[0]
 
-# Affichage des données
-st.subheader(f"Indicateurs pour la MRC : {selected_mrc}")
-st.metric("Population", f"{mrc_data['Population']:,}")
-st.metric("Logements", f"{mrc_data['Logements']:,}")
-st.metric("Superficie (km²)", f"{mrc_data['Superficie_km2']:,}")
-st.metric("Revenu médian", f"{mrc_data['Revenu_median']:,} $")
+# Sous-titre
+st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
 
-# Graphique
-st.subheader("Comparaison des indicateurs")
-chart_data = pd.DataFrame({
-    'Indicateur': ['Population', 'Logements', 'Superficie (km²)', 'Revenu médian'],
-    'Valeur': [
-        mrc_data['Population'],
-        mrc_data['Logements'],
-        mrc_data['Superficie_km2'],
-        mrc_data['Revenu_median']
-    ]
+# Création d'une série temporelle à partir des colonnes 2015 à 2025
+years = [str(year) for year in range(2015, 2026)]
+logement_data = pd.DataFrame({
+    "Année": years,
+    "Nombre de logements": [mrc_data[year] for year in years]
 })
-st.bar_chart(chart_data.set_index("Indicateur"))
+
+# Affichage du graphique
+st.bar_chart(logement_data.set_index("Année"))
