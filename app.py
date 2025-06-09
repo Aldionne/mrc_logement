@@ -6,10 +6,13 @@ import pandas as pd
 def load_data():
     return pd.read_csv("data_mrc_logement.csv")
 
-data = load_data()  
+data = load_data()
 
-# Diagnostic : afficher les colonnes disponibles
-st.write("Colonnes du CSV :", data.columns.tolist())
+# Nettoyage (au cas où il y aurait des espaces dans les noms de colonnes)
+data.columns = data.columns.str.strip()
+
+# Diagnostic : afficher les colonnes
+st.write("Colonnes disponibles :", data.columns.tolist())
 
 # Titre
 st.title("Évolution du nombre de logements par MRC (2015–2025)")
@@ -18,22 +21,24 @@ st.title("Évolution du nombre de logements par MRC (2015–2025)")
 selected_mrc = st.selectbox("Choisissez une MRC", sorted(data["MRC"].unique()))
 
 # Filtrage des données pour la MRC sélectionnée
-mrc_data = data[data["MRC"] == selected_mrc].iloc[0]
+mrc_data = data[data["MRC"] == selected_mrc]
 
-# Sous-titre
-st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
+# Vérification qu'on a bien une ligne
+if not mrc_data.empty:
+    mrc_row = mrc_data.iloc[0]
 
-# Création d'une série temporelle à partir des colonnes 2015 à 2025
-years = [str(year) for year in range(2015, 2026)]
+    # Plage d’années
+    years = [str(year) for year in range(2015, 2026)]
 
-# Affichage pour diagnostic (facultatif)
-st.write("Valeurs pour la MRC sélectionnée :", mrc_data)
+    # Création de la DataFrame pour le graphique
+    logement_data = pd.DataFrame({
+        "Année": years,
+        "Nombre de logements": [mrc_row[year] for year in years]
+    })
 
-# Construction des données pour le graphique
-logement_data = pd.DataFrame({
-    "Année": years,
-    "Nombre de logements": [mrc_data[year] for year in years]
-})
+    # Affichage du graphique
+    st.subheader(f"Évolution du nombre de logements pour la MRC : {selected_mrc}")
+    st.bar_chart(logement_data.set_index("Année"))
 
-# Affichage du graphique
-st.bar_chart(logement_data.set_index("Année"))
+else:
+    st.error("Aucune donnée trouvée pour la MRC sélectionnée.")
