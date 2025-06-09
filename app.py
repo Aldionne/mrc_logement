@@ -5,9 +5,11 @@ import pandas as pd
 @st.cache_data
 def load_data():
     return pd.read_csv("data_mrc_logement.csv")
-st.write("Colonnes du CSV :", data.columns.tolist())
 
-data = load_data()
+data = load_data()  
+
+# Diagnostic : afficher les colonnes disponibles
+st.write("Colonnes du CSV :", data.columns.tolist())
 
 # Titre
 st.title("Évolution du nombre de logements par MRC (2015–2025)")
