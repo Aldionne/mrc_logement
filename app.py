@@ -27,6 +27,8 @@ mrc_data = data[data["MRC"] == selected_mrc]
 if not mrc_data.empty:
     mrc_row = mrc_data.iloc[0]
 
+    st.write("Ligne de données sélectionnée :", mrc_row)
+
     # Plage d’années
     years = [str(year) for year in range(2015, 2026)]
 
