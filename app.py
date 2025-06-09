@@ -35,7 +35,10 @@ if not mrc_data.empty:
     st.subheader(f"Évolution du nombre de logements (2015-2025) {selected_mrc}")
 
     # Création du graphique avec Altair
-   chart = alt.Chart(logement_data).mark_line(point=alt.OverlayMarkDef(filled=True, size=100), strokeWidth=3).encode(
+ chart = alt.Chart(logement_data).mark_line(
+    point=alt.OverlayMarkDef(filled=True, size=100),
+    strokeWidth=3
+).encode(
     x=alt.X("Année:O", title="Année"),
     y=alt.Y("Nombre de logements:Q", title="Nombre de logements"),
     tooltip=["Année", "Nombre de logements"]
