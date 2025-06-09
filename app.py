@@ -5,6 +5,7 @@ import pandas as pd
 @st.cache_data
 def load_data():
     return pd.read_csv("data_mrc_logement.csv")
+st.write("Colonnes du CSV :", data.columns.tolist())
 
 data = load_data()
 
